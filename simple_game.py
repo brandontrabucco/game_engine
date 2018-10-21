@@ -3,44 +3,39 @@ A simple game using python where the user solves a maze'''
 
 
 import game_engine as game
-import tkinter as tk
+
+
+def _key_to_direction(key):
+
+    dx, dy = 0, 0
+
+    if key == 'w':
+        dy = -1
+    elif key == 'a':
+        dx = -1
+    elif key == 's':
+        dy = 1
+    elif key == 'd':
+        dx = 1
+
+    return dx, dy
 
 
 if __name__ == '__main__':
 
-    px = 5
-    py = 5
-
-    board = game.RoomBoard("My Game", 10, 15, 3)
-    board.place_tile(game.PlayerTile(), px, py)
+    board = game.Room("My Game", 10, 15, 3)
+    board.add_entity(game.Player(7, 8))
 
     ui = game.UI(board)
-    ui.make(board)
+    ui.update_drawable(board)
 
-    def update(c):
+    def key_listener(key):
 
-        global px
-        global py
+        dx, dy = _key_to_direction(key)
+        if isinstance(board.shift_destination(0, dx, dy), game.Floor):
+            board.shift_entity(0, dx, dy)
 
-        dx, dy = 0, 0
+        ui.update_drawable(board)
 
-        if c == 'w':
-            dy = -1
-        elif c == 'a':
-            dx = -1
-        elif c == 's':
-            dy = 1
-        elif c == 'd':
-            dx = 1
-
-        if isinstance(board.tiles[py + dy][px + dx].peek(), game.FloorTile):
-
-            p = board.tiles[py][px].pop()
-            board.tiles[py + dy][px + dx].push(p)
-            px, py = px + dx, py + dy
-
-        ui.make(board)
-
-    ui.addKeyPressListener(update)
-
-    ui.show()
+    ui.addKeyPressListener(key_listener)
+    ui.show_window()
