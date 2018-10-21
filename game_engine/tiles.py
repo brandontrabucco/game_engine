@@ -139,7 +139,7 @@ class Player(Tile, Entity):
     def __init__(self, x, y):
 
         Tile.__init__(self,
-            letter='@', text_color=Blue(), background_color=Yellow())
+            letter='P', text_color=Blue(), background_color=Yellow())
         Entity.__init__(self, x, y)
 
 
@@ -148,5 +148,5 @@ class Enemy(Tile, Entity):
     def __init__(self, x, y):
 
         Tile.__init__(self,
-            letter='@', text_color=Blue(), background_color=Magenta())
+            letter='E', text_color=Blue(), background_color=Magenta())
         Entity.__init__(self, x, y)

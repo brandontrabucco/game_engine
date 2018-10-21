@@ -4,7 +4,7 @@ Helper functions to display and run a simple game'''
 
 from game_engine.colors import *
 from game_engine.tiles import *
-from game_engine.stack import *
+from game_engine.stacks import *
 from game_engine.drawable import Drawable
 
 
@@ -54,9 +54,9 @@ class Board(Drawable):
             assert(e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height)
             self.tiles[e.y][e.x].remove_tile()
             
-        e.move(dx, dy)
-        assert(e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height)
-        self.tiles[e.y][e.x].place_tile(e)
+            e.move(dx, dy)
+            assert(e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height)
+            self.tiles[e.y][e.x].place_tile(e)
 
 
     def shift_destination(self, which_entity, dx, dy):
