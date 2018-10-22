@@ -160,4 +160,4 @@ class Brown(Color):
 
     def __init__(self):
 
-        super(Brown, self).__init__(red=1.0, green=0.5, blue=0.5)
+        super(Brown, self).__init__(red=0.5, green=0.35, blue=0.25)

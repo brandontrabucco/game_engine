@@ -8,6 +8,10 @@ from game_engine.stacks import *
 from game_engine.drawable import Drawable
 
 
+import random
+random.seed(12345)
+
+
 #####################################
 # lets make a game board to play on #
 #####################################
@@ -27,23 +31,52 @@ class Board(Drawable):
 
     def place_tile(self, tile, x, y):
 
-        assert(x >= 0 and x < self.width and y >= 0 and y < self.height)
+        if not (x >= 0 and x < self.width and y >= 0 and y < self.height):
+            return False
         self.tiles[y][x].place_tile(tile)
+        return True
 
 
     def remove_tile(self, x, y):
 
-        assert(x >= 0 and x < self.width and y >= 0 and y < self.height)
+        if not (x >= 0 and x < self.width and y >= 0 and y < self.height):
+            return Null()
         return self.tiles[y][x].remove_tile()
 
 
     def add_entity(self, e):
 
-        assert(isinstance(e, Entity))
+        if not (isinstance(e, Entity)):
+            return -1
         self.entities.append(e)
 
-        assert(e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height)
+        if not (e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height):
+            return -1
         self.tiles[e.y][e.x].place_tile(e)
+        return len(self.entities) - 1
+
+
+    def in_front_of(self, which_entity):
+
+        e = self.entities[which_entity]
+        dx, dy = [(0, -1), (1, 0), (0, 1), (-1, 0)][e.z]
+
+        if not (e.x + dx >= 0 and e.x + dx < self.width and e.y + dy >= 0 and e.y + dy < self.height):
+            return Null()
+        return self.tiles[e.y + dy][e.x + dx].first_tile
+
+
+    def break_in_front_of(self, which_entity):
+
+        e = self.entities[which_entity]
+        dx, dy = [(0, -1), (1, 0), (0, 1), (-1, 0)][e.z]
+        return self.remove_tile(e.x + dx, e.y + dy)
+
+
+    def face_entity(self, which_entity, dx, dy):
+
+        e = self.entities[which_entity]
+        e.face(dx, dy)
 
 
     def shift_entity(self, which_entity, dx, dy):
@@ -51,18 +84,24 @@ class Board(Drawable):
         e = self.entities[which_entity]
 
         if isinstance(self.tiles[e.y][e.x].first_tile, Entity):
-            assert(e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height)
+            if not (e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height):
+                return False
             self.tiles[e.y][e.x].remove_tile()
             
             e.move(dx, dy)
-            assert(e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height)
+            if not (e.x >= 0 and e.x < self.width and e.y >= 0 and e.y < self.height):
+                return False
             self.tiles[e.y][e.x].place_tile(e)
+
+        return True
 
 
     def shift_destination(self, which_entity, dx, dy):
 
         e = self.entities[which_entity]
         x, y = e.x + dx, e.y + dy
+        if not (x >= 0 and x < self.width and y >= 0 and y < self.height):
+            return Null()
         return self.tiles[y][x].first_tile
 
 
@@ -94,7 +133,7 @@ class Board(Drawable):
                 self.tiles[y][x].undraw(canvas)
 
 
-class Room(Board):
+class House(Board):
 
     def __init__(self, name, height, width, offset):
 
@@ -105,16 +144,19 @@ class Room(Board):
 
             for y in range(height + 2 * offset):
 
-                next_tile = Stack(Floor())
+                next_stack = Indoor()
 
                 if (x < offset or x >= width  + offset or 
                     y < offset or y >= height + offset ):
-                    next_tile = Stack(Background())
+
+                    next_stack = Forest()
+                    if random.random() > 0.6:
+                        next_stack.remove_tile()
 
                 elif (x == offset or x == width  + offset - 1 or 
                       y == offset or y == height + offset - 1 ):
-                    next_tile = Stack(Wall())
+                    next_stack = Building()
 
-                tiles[y][x] = next_tile
+                tiles[y][x] = next_stack
 
-        super(Room, self).__init__(name, tiles)
+        super(House, self).__init__(name, tiles)

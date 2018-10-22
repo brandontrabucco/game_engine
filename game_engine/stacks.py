@@ -2,8 +2,9 @@
 Helper functions to display and run a simple game'''
 
 
-from game_engine.tiles import Tile
+from game_engine.tiles import *
 from game_engine.drawable import Drawable
+from game_engine.entity import Entity
 
 
 ####################################
@@ -22,7 +23,7 @@ class Stack(Tile):
 
     def place_tile(self, tile):
 
-        assert(isinstance(tile, Tile))
+        assert(isinstance(tile, Tile))            
         self.stack_of_tiles = self.stack_of_tiles + [tile]
 
 
@@ -93,6 +94,9 @@ class Stack(Tile):
     def draw(self, canvas, x, y):
 
         Drawable.draw(self, canvas)
+        if isinstance(self.first_tile, Entity):
+            self.first_tile.background_color = self.second_tile.background_color
+            self.first_tile.letter = ['^', '>', 'v', '<'][self.first_tile.z]
         self.first_tile.draw(canvas, x, y)
 
 
@@ -101,3 +105,41 @@ class Stack(Tile):
         Drawable.undraw(self, canvas)
         for tile in self.stack_of_tiles:
             tile.undraw(canvas)
+
+
+class Forest(Stack):
+
+    def __init__(self):
+
+        Stack.__init__(self, bottom_tile=Null())
+        self.place_tile(Dirt())
+        self.place_tile(Grass())
+        self.place_tile(Tree())
+
+
+class Indoor(Stack):
+
+    def __init__(self):
+
+        Stack.__init__(self, bottom_tile=Null())
+        self.place_tile(Dirt())
+        self.place_tile(Floor())
+
+
+class Building(Stack):
+
+    def __init__(self):
+
+        Stack.__init__(self, bottom_tile=Null())
+        self.place_tile(Dirt())
+        self.place_tile(Floor())
+        self.place_tile(Wall())
+
+
+class Mountain(Stack):
+
+    def __init__(self):
+
+        Stack.__init__(self, bottom_tile=Null())
+        self.place_tile(Dirt())
+        self.place_tile(Rock())

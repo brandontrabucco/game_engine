@@ -5,6 +5,7 @@ Helper functions to display and run a simple game'''
 from game_engine.colors import *
 from game_engine.drawable import Drawable
 from game_engine.entity import Entity
+from game_engine.interactables import *
 
 
 ####################################
@@ -42,11 +43,11 @@ class Tile(Drawable):
         self.handle_to_background = canvas.create_rectangle(
             (x    ) * self.width, (y    ) * self.height, 
             (x + 1) * self.width, (y + 1) * self.height, 
-            fill=self.background_color.hex())
+            fill=self.background_color.hex(), outline=self.background_color.hex())
 
         self.handle_to_text = canvas.create_text(
             (x +.5) * self.width, (y +.5) * self.height, 
-            text=self.letter,      font=('Courier', 16), 
+            text=self.letter,     font=('Sans Serif', -20), 
             fill=self.text_color.hex())
 
 
@@ -70,7 +71,7 @@ class Null(Tile):
             letter=' ', text_color=Black(), background_color=Black())
 
 
-class Background(Tile):
+class Background(Tile, Walkable):
 
     def __init__(self):
 
@@ -78,23 +79,23 @@ class Background(Tile):
             letter='.', text_color=Grey(), background_color=Black())
 
 
-class Wall(Tile):
+class Wall(Tile, Breakable):
 
     def __init__(self):
 
         super(Wall, self).__init__(
-            letter='#', text_color=Black(), background_color=Grey())
+            letter='|', text_color=Black(), background_color=Grey())
 
 
-class Floor(Tile):
+class Floor(Tile, Walkable):
 
     def __init__(self):
 
-        super(Floor, self).__init__(
+        Tile.__init__(self,
             letter='.', text_color=Grey(), background_color=White())
 
 
-class Water(Tile):
+class Water(Tile, Harmful):
 
     def __init__(self):
 
@@ -102,15 +103,15 @@ class Water(Tile):
             letter='~', text_color=White(), background_color=Cyan())
 
 
-class Forest(Tile):
+class Tree(Tile, Breakable):
 
     def __init__(self):
 
-        super(Forest, self).__init__(
-            letter='&', text_color=Green(), background_color=Brown())
+        super(Tree, self).__init__(
+            letter='^', text_color=Black(), background_color=Green())
 
 
-class Grass(Tile):
+class Grass(Tile, Walkable):
 
     def __init__(self):
 
@@ -118,7 +119,7 @@ class Grass(Tile):
             letter='=', text_color=Green(), background_color=Brown())
 
 
-class Dirt(Tile):
+class Dirt(Tile, Walkable):
 
     def __init__(self):
 
@@ -126,11 +127,11 @@ class Dirt(Tile):
             letter='.', text_color=Grey(), background_color=Brown())
 
 
-class Mountain(Tile):
+class Rock(Tile, Breakable):
 
     def __init__(self):
 
-        super(Mountain, self).__init__(
+        super(Rock, self).__init__(
             letter='A', text_color=Red(), background_color=Brown())
 
 
@@ -139,7 +140,7 @@ class Player(Tile, Entity):
     def __init__(self, x, y):
 
         Tile.__init__(self,
-            letter='P', text_color=Blue(), background_color=Yellow())
+            letter='^', text_color=Blue(), background_color=Yellow())
         Entity.__init__(self, x, y)
 
 
@@ -148,5 +149,5 @@ class Enemy(Tile, Entity):
     def __init__(self, x, y):
 
         Tile.__init__(self,
-            letter='E', text_color=Blue(), background_color=Magenta())
+            letter='^', text_color=Blue(), background_color=Magenta())
         Entity.__init__(self, x, y)
